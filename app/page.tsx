@@ -17,11 +17,17 @@ export default function Home() {
     ))
   }
 
+  const handleUnlike = (id: string) => {
+    setEmojis(prevEmojis => prevEmojis.map(emoji => 
+      emoji.id === id ? { ...emoji, likes: Math.max(0, emoji.likes - 1) } : emoji
+    ))
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold text-center mb-8">Emoji Maker</h1>
       <EmojiForm onEmojiGenerated={handleEmojiGenerated} />
-      <EmojiGrid emojis={emojis} onLike={handleLike} />
+      <EmojiGrid emojis={emojis} onLike={handleLike} onUnlike={handleUnlike} />
     </div>
   )
 }

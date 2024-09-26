@@ -16,9 +16,10 @@ export type Emoji = {
 interface EmojiGridProps {
   emojis: Emoji[]
   onLike: (id: string) => void
+  onUnlike: (id: string) => void
 }
 
-export default function EmojiGrid({ emojis, onLike }: EmojiGridProps) {
+export default function EmojiGrid({ emojis, onLike, onUnlike }: EmojiGridProps) {
   const [likedEmojis, setLikedEmojis] = useState<Set<string>>(new Set())
 
   const handleDownload = (imageUrl: string, prompt: string) => {
@@ -26,8 +27,15 @@ export default function EmojiGrid({ emojis, onLike }: EmojiGridProps) {
     downloadImage(imageUrl, fileName);
   }
 
-  const handleLike = (id: string) => {
-    if (!likedEmojis.has(id)) {
+  const handleLikeToggle = (id: string) => {
+    if (likedEmojis.has(id)) {
+      // Unlike
+      const newLikedEmojis = new Set(likedEmojis)
+      newLikedEmojis.delete(id)
+      setLikedEmojis(newLikedEmojis)
+      onUnlike(id)
+    } else {
+      // Like
       setLikedEmojis(new Set(likedEmojis).add(id))
       onLike(id)
     }
@@ -48,7 +56,7 @@ export default function EmojiGrid({ emojis, onLike }: EmojiGridProps) {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => handleLike(emoji.id)}
+              onClick={() => handleLikeToggle(emoji.id)}
               className="text-white mr-2"
             >
               <Heart className={likedEmojis.has(emoji.id) ? 'fill-current text-red-500' : ''} />
