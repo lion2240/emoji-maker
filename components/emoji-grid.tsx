@@ -3,6 +3,8 @@
 import Image from 'next/image'
 import { Heart, Download } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { downloadImage } from '@/utils/downloadImage'
+import { useState } from 'react'
 
 export type Emoji = {
   id: string
@@ -17,9 +19,18 @@ interface EmojiGridProps {
 }
 
 export default function EmojiGrid({ emojis, onLike }: EmojiGridProps) {
+  const [likedEmojis, setLikedEmojis] = useState<Set<string>>(new Set())
+
   const handleDownload = (imageUrl: string, prompt: string) => {
-    // TODO: Implement download functionality
-    console.log(`Downloading emoji: ${prompt}`)
+    const fileName = `emoji-${prompt.replace(/\s+/g, '-').toLowerCase()}.png`;
+    downloadImage(imageUrl, fileName);
+  }
+
+  const handleLike = (id: string) => {
+    if (!likedEmojis.has(id)) {
+      setLikedEmojis(new Set(likedEmojis).add(id))
+      onLike(id)
+    }
   }
 
   return (
@@ -37,10 +48,10 @@ export default function EmojiGrid({ emojis, onLike }: EmojiGridProps) {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => onLike(emoji.id)}
+              onClick={() => handleLike(emoji.id)}
               className="text-white mr-2"
             >
-              <Heart className={emoji.likes > 0 ? 'fill-current' : ''} />
+              <Heart className={likedEmojis.has(emoji.id) ? 'fill-current text-red-500' : ''} />
             </Button>
             <Button
               variant="ghost"
